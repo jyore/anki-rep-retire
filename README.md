@@ -43,3 +43,12 @@ There are several fields to fill out:
 # Reviewing w/ Rep Retire
 
 Once Rep Retire is enabled for a deck, it will execute the algorithm after every card has been answered correctly to determine if it should be retired or not. It if is retired, you will receive a tool-tip notification that the card was retired. When saving configuration settings, it will run the algorithm over all enabled decks and retire any cards it determines to need retiring. Again, for those who review on Anki mobile, to retroactively retire cards, open anki desktop, open the Rep Retire Configuration settings and click "Save & Run". A tool-tip notification will be displayed with the number of cards that it retired.
+
+
+# Potential Issues and Fixes
+
+## Deck Settings Get Confused with Default Deck
+
+It has happened occasionally in testing where saving the deck settings will alter the save settings for the default deck, instead of the target one. For example, saving the settings for "My Deck" is not keeping the settings between multiple runs and the "Default" deck settings are being changed. This causes issues with the automatic retire and run execution from retiring cards.
+
+If this occurs, export the deck with all media and scheduling information, delete the deck that is not working correctly, import the deck from your export. This will re-create the deck and the problem should go away. Alternatively, you could create a new deck, move all the cards via the browser, delete the old deck, and run the "Tools->Check Database" command.
