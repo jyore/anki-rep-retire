@@ -49,19 +49,27 @@ class ConfigurationManager:
     except Exception as e:
       saved = {}
 
-    decks = self.mw.col.decks.all()
-    for deck in decks:
-      self.deck_map[deck['name']] = deck['id']
 
-      if str(deck['id']) in saved:
-        s = saved[str(deck['id'])]
-        self.settings[str(deck['id'])] = Settings(
-          enabled   = s['enabled'] if 'enabled' in s else DEFAULTS.enabled,
-          threshold = s['threshold'] if 'threshold' in s else DEFAULTS.threshold,
-          tag       = s['tag'] if 'tag' in s else DEFAULTS.tag
-        )
-      else:
-        self.settings[deck['id']] = Settings()
+    skeys = saved.keys()
+    decks = self.mw.col.decks.all()
+
+    for deck in decks:
+      did = str(deck['id'])
+      name = deck['name']
+
+      if did not in skeys:
+        saved[did] = Settings().obj()
+
+      self.deck_map[name] = did
+      
+
+    for did in saved:
+      s = saved[did]
+      self.settings[did] = Settings(
+        enabled   = s['enabled'] if 'enabled' in s else DEFAULTS.enabled,
+        threshold = s['threshold'] if 'threshold' in s else DEFAULTS.threshold,
+        tag       = s['tag'] if 'tag' in s else DEFAULTS.tag,
+      )
 
 
   def save(self):
@@ -136,7 +144,7 @@ class UI:
 
     layout.addWidget(QLabel(""), 2, 0, 1, 12)
 
-    layout.addWidget(QLabel("Threshold:"), 3, 0, 1, 6)
+    layout.addWidget(QLabel("Threshold (days):"), 3, 0, 1, 6)
     layout.addWidget(QLabel("Tag As:"), 3, 6, 1, 6)
 
     layout.addWidget(self.threshold, 4, 0, 1, 6)
@@ -156,7 +164,7 @@ class UI:
 
 
   def current_settings(self):
-    return self.cm[self.cm.deck_list()[self.selected]]
+    return self.cm[str(self.mw.col.decks.all()[self.selected]['id'])]
 
 
   def select_deck(self, index):
@@ -227,11 +235,12 @@ class RepRetire:
 
     if reviewer is not None and answer in [2,3,4]:
       card = reviewer.lastCard()
-      settings = self.cm[str(card.did)]
+      if card is not None:
+        settings = self.cm[str(card.did)]
 
-      if settings.enabled and card.ivl > settings.threshold:
-        self.suspend([card.id])
-        self.tag([card.nid], settings.tag)
+        if settings.enabled and int(card.ivl) >= int(settings.threshold):
+          self.suspend([card.id])
+          self.tag([card.nid], settings.tag)
 
 
 
