@@ -1,0 +1,8 @@
+{
+  "1": {
+    "name": "Default",
+    "enabled": false,
+    "threshold": 40,
+    "tag": "RETIRED"
+  }
+}

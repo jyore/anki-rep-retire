@@ -8,14 +8,25 @@ By using this add-on, you can tailor a specific threshold for each one of your d
 > **Note**: The mobile app cannot run add-ons, so you cannot gain the benefit from the automatic trigger that runs after a review  when using anki mobile. To run the retire algorithm over all cards, simply open the add-on configuration menu on desktop anki after syncing all of your reviews and hit the `Save & Run` button. This will retire all cards that need to be retired from your mobile review session.
 
 
+
+# Support
+
+Anki Version Support
+- For Anki 2.0, use Version 1.0.0-final or lower
+- For Anki 2.1, use Version 2.0.0-beta or higher
+
+This document will only cover Anki 2.1 support. For Anki 2.0, please load a previous tag.
+
+
+
 # Installing Rep Retire
 
 Installing this add-on is done by following these steps:
 
 - Visit the [Releases](https://github.com/jyore/anki-rep-retire/releases) page
 - Download the latest release
-- Copy the `RepRetire.py` file to the Anki Addon directory
-  - To find the Add-ons direcory, in Anki, click `Tools->Add-ons->Open Add-ons Folder`
+- Extract the downloaded zip file
+- Copy the deflated directory to the addons21 folder
 - Restart Anki
 
 
@@ -25,30 +36,52 @@ After installing, by default, Rep Retire is disabled for all decks. You must ope
 
 Defaulting the add-on to off was done inentionally to minimize the impact the add-on may have before users have had the opportunity to configure everything how they desire.
 
-To begin configuring Rep Retire, in Anki, click `Tools->Rep Retire`. You should see an image similar to below:
-
-![Rep Retire](https://user-images.githubusercontent.com/904738/48365260-0cc89e00-e670-11e8-85dd-2892d335d4a6.png)
-
-There are several fields to fill out:
-
-- **Select Deck**: This is a dropdown that will auto-populate with all of the decks in your profile. When selecting a deck, all of the other fields will change to reflect the settings for that deck
-- **Enabled**: If it is _checked_, then Rep Retire is active for this deck.
-- **Threshold**: The threshold at which a card in the selected should be retired when it's new-interval exceeds.
-- **Tag As**: What to tag a card with when they are retired, for the selected deck
-- **Defaults**: Restores the default settings for the selected deck
-- **Cancel**: Cancel configuration, do not save any values.
-- **Save & Run**: Save configuration and run the algorithm for all enabled decks.
+To begin configuring Rep Retire, in Anki, do the following:
+- Click `Tools->Add-ons`
+- Select `Rep Retire` and click "configure"
+- Update the settings as desired (see below)
+- Save the changes
 
 
-# Reviewing w/ Rep Retire
+## Configuration Details
+
+When you open the confiuration menu, you will be presented with a json file, detailing configuration for all of your decks. The settings are organized by the internal deck id to avoid any issues with naming collisions between decks or profiles. It should looks similar to the following:
+
+~~~
+{
+    "1": {
+        "enabled": false,
+        "name": "Default",
+        "tag": "RETIRED",
+        "threshold": 40
+    },
+    "1521988881021": {
+        "enabled": false,
+        "name": "Japanese",
+        "tag": "RETIRED",
+        "threshold": 40
+    }
+}
+~~~
+
+> **Note:** The default deck is given the id of '1' by anki. This is somewhat a special deck and should probably be avoided, if possible. If you switch profiles, the default deck will always have the same id, so the settings will not be unique per-profile unless you use a different deck.
+
+
+Locate the settings of the deck you wish to use by finding the "name" field that corresponds to the deck name. Set the following settings as desired:
+
+- **enabled**: Set whether or not the add-on will trigger for this deck
+- **threshold**: The threshold, in days, in which a card will be retired if the next interval exceeds it
+- **tag**: The tag to add to the card when being retired
+
+
+
+
+## Reviewing w/ Rep Retire
 
 Once Rep Retire is enabled for a deck, it will execute the algorithm after every card has been answered correctly to determine if it should be retired or not. It if is retired, you will receive a tool-tip notification that the card was retired. When saving configuration settings, it will run the algorithm over all enabled decks and retire any cards it determines to need retiring. Again, for those who review on Anki mobile, to retroactively retire cards, open anki desktop, open the Rep Retire Configuration settings and click "Save & Run". A tool-tip notification will be displayed with the number of cards that it retired.
 
 
-# Potential Issues and Fixes
 
-## Deck Settings Get Confused with Default Deck
+## Manually Triggering a Run
 
-It has happened occasionally in testing where saving the deck settings will alter the save settings for the default deck, instead of the target one. For example, saving the settings for "My Deck" is not keeping the settings between multiple runs and the "Default" deck settings are being changed. This causes issues with the automatic retire and run execution from retiring cards.
-
-If this occurs, export the deck with all media and scheduling information, delete the deck that is not working correctly, import the deck from your export. This will re-create the deck and the problem should go away. Alternatively, you could create a new deck, move all the cards via the browser, delete the old deck, and run the "Tools->Check Database" command.
+Simply click `Tools->Run Rep Retire` and it will retire cards from all decks, based on your settings.
