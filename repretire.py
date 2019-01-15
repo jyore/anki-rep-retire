@@ -18,7 +18,7 @@ class RepRetire:
         self.action.triggered.connect(self.run)
         
         Reviewer._answerCard = wrap(Reviewer._answerCard, self.trigger, "after")
-        DeckBrowser._renderStats = wrap(DeckBrowser._renderStats, self.build_config, "after")
+        DeckBrowser._renderStats = wrap(DeckBrowser._renderStats, self.build_config, "before")
 
 
     def build_config(self, orig):
